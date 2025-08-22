@@ -18,7 +18,8 @@ class Program
             Console.WriteLine("1. Add a habit");
             Console.WriteLine("2. View habits");
             Console.WriteLine("3. Delete all habits");
-            Console.WriteLine("4. Exit");
+            Console.WriteLine("4. Delete a habit by ID");
+            Console.WriteLine("5. Exit");
 
             string input = Console.ReadLine();
             switch (input)
@@ -48,6 +49,17 @@ class Program
                     break;
 
                 case "4":
+                    Console.WriteLine("Enter the ID of the habit to delete:");
+                    // Parse input to an integer (all habit IDs are integers)
+                    int id;
+                    while (!int.TryParse(Console.ReadLine(), out id))
+                    {
+                        Console.WriteLine("Invalid input. Please enter a number for the habit ID:");
+                    }
+                    db.deleteHabitById(id);
+                    break;
+
+                case "5":
                     running = false;
                     Console.WriteLine("Exiting the program. Goodbye!");
                     break;
@@ -162,7 +174,6 @@ class Habit
                 Console.WriteLine("Error: " + e.Message);
             }
         }
-        // Method to delete a given habit by its ID
 
         // Method to delete all habits
         public void deleteAllHabits()
@@ -198,7 +209,49 @@ class Habit
             }
         }
 
+        // Method to delete a given habit by its ID
+        public void deleteHabitById(int id)
+        {
+            var sql = "DELETE FROM habits WHERE id = $id";
+            // Provides a pre deletion warning message
+            Console.WriteLine($"Are you sure you want to delete habit ID {id}? This action cannot be reverted. (Y/N)");
+            switch (Console.ReadLine())
+            {
+                case "y":
+                    try
+                    {
+                        using var connection = new SqliteConnection(@"Data Source=habits.db");
+                        connection.Open();
+                        using var command = new SqliteCommand(sql, connection);
+                        command.Parameters.AddWithValue("$id", id);
+                        int rowsAffected = command.ExecuteNonQuery();
+                        if (rowsAffected > 0)
+                        {
+                            Console.WriteLine($"Habit with ID {id} deleted.");
+                        }
+                        else
+                        {
+                            Console.WriteLine($"No habit found with ID {id}.");
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine("Error: " + e.Message);
+                    }
+                    break;
+
+                case "n":
+                    Console.WriteLine("Deletion request cancelled.");
+                    return;
+
+                default:
+                    // We close this if the input to prevent accidental deletion 
+                    Console.WriteLine("Invalid input. Closing request.");
+                    return;
+            }
+        }
+
         // Method to edit a given habit by its ID
-        
+
     }
 }
