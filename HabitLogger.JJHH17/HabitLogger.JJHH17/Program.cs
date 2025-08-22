@@ -10,17 +10,17 @@ class Program
         bool running = true;
         Database db = new Database();
 
-        Console.WriteLine("Welcome to the Habit Logger!");
+        Console.WriteLine("\nWelcome to the Habit Logger!\n");
 
         while (running)
         {
             Console.WriteLine("Please select an option:");
-            Console.WriteLine("1. Add a habit");
-            Console.WriteLine("2. View habits");
-            Console.WriteLine("3. Delete all habits");
-            Console.WriteLine("4. Delete a habit by ID");
-            Console.WriteLine("5. Edit a habit (by ID)");
-            Console.WriteLine("6. Exit");
+            Console.WriteLine("\t1. Add a habit");
+            Console.WriteLine("\t2. View habits");
+            Console.WriteLine("\t3. Delete all habits");
+            Console.WriteLine("\t4. Delete a habit by ID");
+            Console.WriteLine("\t5. Edit a habit (by ID)");
+            Console.WriteLine("\t6. Exit");
 
             string input = Console.ReadLine();
             switch (input)
@@ -50,7 +50,7 @@ class Program
                     break;
 
                 case "4":
-                    Console.WriteLine("Enter the ID of the habit to delete:");
+                    Console.WriteLine("\nEnter the ID of the habit to delete:");
                     // Parse input to an integer (all habit IDs are integers)
                     int id;
                     while (!int.TryParse(Console.ReadLine(), out id))
@@ -61,7 +61,7 @@ class Program
                     break;
 
                 case "5":
-                    Console.WriteLine("Enter the ID of the habit to edit:");
+                    Console.WriteLine("\nEnter the ID of the habit to edit:");
                     int editId;
                     while (!int.TryParse(Console.ReadLine(), out editId))
                     {
@@ -82,7 +82,7 @@ class Program
 
                 case "6":
                     running = false;
-                    Console.WriteLine("Exiting the program. Goodbye!");
+                    Console.WriteLine("\nExiting the program. Goodbye!");
                     break;
 
                 default:
@@ -182,7 +182,7 @@ class Habit
                         var name = reader.GetString(1);
                         var quantity = reader.GetInt32(2);
                         var date = reader.GetString(3);
-                        Console.WriteLine($"Habit ID: {id}, Name: {name}, Quantity: {quantity}, Date: {date}");
+                        Console.WriteLine($"\nHabit ID: {id}, Name: {name}, Quantity: {quantity}, Date: {date}");
                     }
                 }
                 else
@@ -201,7 +201,7 @@ class Habit
         {
             var sql = "DELETE FROM habits";
             // Provide a warning message before deleting all habits
-            Console.WriteLine("Are you sure you want to delete all habits? This action cannot be undone. (y/n)");
+            Console.WriteLine("\nAre you sure you want to delete all habits? This action cannot be undone. (y/n)");
             switch (Console.ReadLine().ToLower())
             {
                 case "y":
@@ -235,7 +235,7 @@ class Habit
         {
             var sql = "DELETE FROM habits WHERE id = $id";
             // Provides a pre deletion warning message
-            Console.WriteLine($"Are you sure you want to delete habit ID {id}? This action cannot be reverted. (Y/N)");
+            Console.WriteLine($"\nAre you sure you want to delete habit ID {id}? This action cannot be reverted. (Y/N)");
             switch (Console.ReadLine().ToLower())
             {
                 case "y":
