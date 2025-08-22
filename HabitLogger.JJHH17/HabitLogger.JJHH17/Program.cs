@@ -23,7 +23,8 @@ class Program
             Console.WriteLine("\t3. Delete all habits");
             Console.WriteLine("\t4. Delete a habit by ID");
             Console.WriteLine("\t5. Edit a habit (by ID)");
-            Console.WriteLine("\t6. Exit");
+            Console.WriteLine("\t6. Fetch habit category quantity");
+            Console.WriteLine("\t7. Exit");
 
             string input = Console.ReadLine();
             switch (input)
@@ -56,12 +57,13 @@ class Program
                                     Console.WriteLine("Invalid date format. Please enter the date again (YYYY-MM-DD, or use an alternative format):");
                                 }
                             }
-                            
                             break;
+
                         case "2":
                             Console.WriteLine($"Using today's date: {currentDate.ToString("yyyy-MM-dd")}");
                             date = currentDate.ToString("yyyy-MM-dd");
                             break;
+
                         default:
                             Console.WriteLine("Invalid option. Using today's date by default.");
                             date = currentDate.ToString("yyyy-MM-dd");
@@ -75,32 +77,32 @@ class Program
                     switch (inputCategory.ToLower())
                     {
                         case "run":
-                            category = "Run";
+                            category = "run";
                             break;
 
                         case "leisure":
-                            category = "Leisure";
+                            category = "leisure";
                             break;
 
                         case "work":
-                            category = "Work";
+                            category = "work";
                             break;
 
                         case "errands":
-                            category = "Errands";
+                            category = "errands";
                             break;
 
                         case "social":
-                            category = "Social";
+                            category = "social";
                             break;
 
                         case "other":
-                            category = "Other";
+                            category = "other";
                             break;
 
                         default:
                             Console.WriteLine("Invalid category. Using 'Other' as default.");
-                            category = "Other";
+                            category = "other";
                             break;
                     }
 
@@ -150,6 +152,12 @@ class Program
                     break;
 
                 case "6":
+                    Console.WriteLine("\nEnter the category to fetch total quantity (Run, Leisure, Work, Errands, Social, Other):");
+                    string habitCategory = Console.ReadLine().ToLower();
+                    db.fetchCategoryQuantities(habitCategory);
+                    break;
+
+                case "7":
                     running = false;
                     Console.WriteLine("\nExiting the program. Goodbye!");
                     break;
@@ -368,6 +376,34 @@ class Habit
                 else
                 {
                     Console.WriteLine($"No habit found with ID {id}.");
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Error: " + e.Message);
+            }
+        }
+
+        // Method to fetch quantity of each category
+        public void fetchCategoryQuantities(string category)
+        {
+            var sql = "SELECT SUM(quantity) FROM habits WHERE category = $category";
+
+            try
+            {
+                using var connection = new SqliteConnection(@"Data Source=habits.db");
+                connection.Open();
+                using var command = new SqliteCommand(sql, connection);
+                command.Parameters.AddWithValue("$category", category);
+                int rowsAffected = command.ExecuteNonQuery();
+                if (rowsAffected == 0)
+                {
+                    Console.WriteLine($"No habits found in category '{category}'.");
+                    return;
+                } else
+                {
+                    var totalQuantity = command.ExecuteScalar();
+                    Console.WriteLine($"Total quantity for category '{category}': {totalQuantity}");
                 }
             }
             catch (Exception e)
