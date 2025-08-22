@@ -7,7 +7,6 @@ class Program
 {
     static void Main(string[] args)
     {
-        // Main program loop
         bool running = true;
         Database db = new Database();
         // Used for date functionality
@@ -15,6 +14,7 @@ class Program
 
         Console.WriteLine("\nWelcome to the Habit Logger!\n");
 
+        // Main program loop
         while (running)
         {
             Console.WriteLine("Please select an option:");
@@ -43,7 +43,20 @@ class Program
                     {
                         case "1":
                             Console.WriteLine("Enter date (YYYY-MM-DD, or use an alternative format):");
-                            date = Console.ReadLine();
+
+                            while (true)
+                            {
+                                try
+                                {
+                                    date = DateTime.Parse(Console.ReadLine()).ToString("yyyy-MM-dd");
+                                    break;
+                                }
+                                catch (FormatException)
+                                {
+                                    Console.WriteLine("Invalid date format. Please enter the date again (YYYY-MM-DD, or use an alternative format):");
+                                }
+                            }
+                            
                             break;
                         case "2":
                             Console.WriteLine($"Using today's date: {currentDate.ToString("yyyy-MM-dd")}");
