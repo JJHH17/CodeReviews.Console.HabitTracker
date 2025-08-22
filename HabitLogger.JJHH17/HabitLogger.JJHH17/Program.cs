@@ -6,11 +6,51 @@ class Program
 {
     static void Main(string[] args)
     {
-        Console.WriteLine("Hello from Main");
-        Habit newhabit = new Habit();
-        newhabit.setHabit("Running", 5, "2024-06-01");
+        // Main program loop
+        bool running = true;
         Database db = new Database();
-        db.viewHabits();
+
+        Console.WriteLine("Welcome to the Habit Logger!");
+
+        while (running)
+        {
+            Console.WriteLine("Please select an option:");
+            Console.WriteLine("1. Add a habit");
+            Console.WriteLine("2. View habits");
+            Console.WriteLine("3. Exit");
+
+            string input = Console.ReadLine();
+            switch (input)
+            {
+                case "1":
+                    Console.WriteLine("Enter habit name:");
+                    string name = Console.ReadLine();
+                    Console.WriteLine("Enter quantity of habit (number):");
+                    int quantity;
+                    while (!int.TryParse(Console.ReadLine(), out quantity))
+                    {
+                        Console.WriteLine("Invalid input. Please enter a number for quantity:");
+                    }
+                    Console.WriteLine("Enter date (YYYY-MM-DD):");
+                    string date = Console.ReadLine();
+                    Habit habit = new Habit();
+                    habit.setHabit(name, quantity, date);
+                    Console.WriteLine("Habit added successfully!");
+                    break;
+
+                case "2":
+                    db.viewHabits();
+                    break;
+
+                case "3":
+                    running = false;
+                    Console.WriteLine("Exiting the program. Goodbye!");
+                    break;
+
+                default:
+                    Console.WriteLine("Invalid option. Please try again.");
+                    break;
+            }
     }
 }
 
@@ -34,90 +74,91 @@ class Habit
     }
 }
 
-// Database class
-class Database
-{
+    // Database class
+    class Database
+    {
 
-    // Table schema
-    private readonly string tableCreate = @"CREATE TABLE IF NOT EXISTS habits (
+        // Table schema
+        private readonly string tableCreate = @"CREATE TABLE IF NOT EXISTS habits (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             name TEXT,
             quantity INTEGER,
             date TEXT
         )";
 
-    // Constructor should create a db if one doesn't exist
-    public Database()
-    {
-        try
+        // Constructor should create a db if one doesn't exist
+        public Database()
         {
-            // Creates db in bin/debug/net7.0
-            using (var connection = new SqliteConnection("Data Source=habits.db"))
+            try
             {
-                // Creates table if it doesn't exist
-                connection.Open();
-                using var command = new SqliteCommand(tableCreate, connection);
-                command.ExecuteNonQuery();
-
-                Console.WriteLine("Database and table connection created.");
-            }
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine("Error: " + e.Message);
-        }
-    }
-
-    // Adds a habit to the database
-    public void addHabit(Habit habit)
-    {
-        using (var connection = new SqliteConnection("Data Source=habits.db"))
-        {
-            connection.Open();
-            var command = connection.CreateCommand();
-            command.CommandText = @"INSERT INTO habits (name, quantity, date) VALUES ($name, $quantity, $date)";
-            command.Parameters.AddWithValue("$name", habit.name);
-            command.Parameters.AddWithValue("$quantity", habit.quantity);
-            command.Parameters.AddWithValue("$date", habit.date);
-            command.ExecuteNonQuery();
-        }
-    }
-
-    // Prints all habits in the database (Includes ID which we can later use to delete or update habits)
-    public void viewHabits()
-    {
-        var sql = "SELECT * FROM habits";
-
-        try
-        {
-            using var connection = new SqliteConnection(@"Data Source=habits.db");
-            connection.Open();
-
-            using var command = new SqliteCommand(sql, connection);
-
-            using var reader = command.ExecuteReader();
-            if (reader.HasRows)
-            {
-                while (reader.Read())
+                // Creates db in bin/debug/net7.0
+                using (var connection = new SqliteConnection("Data Source=habits.db"))
                 {
-                    var id = reader.GetInt32(0);
-                    var name = reader.GetString(1);
-                    var quantity = reader.GetInt32(2);
-                    var date = reader.GetString(3);
-                    Console.WriteLine($"Habit ID: {id}, Name: {name}, Quantity: {quantity}, Date: {date}");
+                    // Creates table if it doesn't exist
+                    connection.Open();
+                    using var command = new SqliteCommand(tableCreate, connection);
+                    command.ExecuteNonQuery();
+
+                    Console.WriteLine("Database and table connection created.");
                 }
             }
-            else
+            catch (Exception e)
             {
-                Console.WriteLine("No habits founds");
+                Console.WriteLine("Error: " + e.Message);
             }
         }
-        catch (Exception e)
-        {
-            Console.WriteLine("Error: " + e.Message);
-        }
-    }
 
+        // Adds a habit to the database
+        public void addHabit(Habit habit)
+        {
+            using (var connection = new SqliteConnection("Data Source=habits.db"))
+            {
+                connection.Open();
+                var command = connection.CreateCommand();
+                command.CommandText = @"INSERT INTO habits (name, quantity, date) VALUES ($name, $quantity, $date)";
+                command.Parameters.AddWithValue("$name", habit.name);
+                command.Parameters.AddWithValue("$quantity", habit.quantity);
+                command.Parameters.AddWithValue("$date", habit.date);
+                command.ExecuteNonQuery();
+            }
+        }
+
+        // Prints all habits in the database (Includes ID which we can later use to delete or update habits)
+        public void viewHabits()
+        {
+            var sql = "SELECT * FROM habits";
+
+            try
+            {
+                using var connection = new SqliteConnection(@"Data Source=habits.db");
+                connection.Open();
+
+                using var command = new SqliteCommand(sql, connection);
+
+                using var reader = command.ExecuteReader();
+                if (reader.HasRows)
+                {
+                    while (reader.Read())
+                    {
+                        var id = reader.GetInt32(0);
+                        var name = reader.GetString(1);
+                        var quantity = reader.GetInt32(2);
+                        var date = reader.GetString(3);
+                        Console.WriteLine($"Habit ID: {id}, Name: {name}, Quantity: {quantity}, Date: {date}");
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("No habits founds");
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Error: " + e.Message);
+            }
+        }
+
+    }
     // Method to edit a given habit by its ID
 
     // Method to delete a given habit by its ID
