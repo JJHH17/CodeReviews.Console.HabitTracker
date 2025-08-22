@@ -395,14 +395,17 @@ class Habit
                 connection.Open();
                 using var command = new SqliteCommand(sql, connection);
                 command.Parameters.AddWithValue("$category", category);
-                int rowsAffected = command.ExecuteNonQuery();
-                if (rowsAffected == 0)
+ 
+                var result = command.ExecuteScalar();
+
+                // Check if result is null (or if table is null with given category)
+                if (result == DBNull.Value || result == null)
                 {
                     Console.WriteLine($"No habits found in category '{category}'.");
                     return;
                 } else
                 {
-                    var totalQuantity = command.ExecuteScalar();
+                    int totalQuantity = Convert.ToInt32(result);
                     Console.WriteLine($"Total quantity for category '{category}': {totalQuantity}");
                 }
             }
