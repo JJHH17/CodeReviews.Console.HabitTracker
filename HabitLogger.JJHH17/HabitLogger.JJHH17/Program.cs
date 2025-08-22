@@ -29,17 +29,29 @@ class Habit
 // Database class
 class Database
 {
+
+    // Table schema
+    private readonly string tableCreate = @"CREATE TABLE IF NOT EXISTS habits (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT,
+            quantity INTEGER,
+            date TEXT
+        )";
+
     // Constructor should create a db if one doesn't exist
     public Database()
     {
         try
         {
             // Creates db in bin/debug/net7.0
-            using (var connection = new SqliteConnection("Data Source=test.db"))
+            using (var connection = new SqliteConnection("Data Source=habits.db"))
             {
+                // Creates table if it doesn't exist
                 connection.Open();
-                Console.WriteLine("Database opened");
-                connection.Close();
+                using var command = new SqliteCommand(tableCreate, connection);
+                command.ExecuteNonQuery();
+
+                Console.WriteLine("Database and table connection created.");
             }
         }
         catch (Exception e)
