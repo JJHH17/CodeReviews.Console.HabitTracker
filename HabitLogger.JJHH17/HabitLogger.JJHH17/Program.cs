@@ -1,6 +1,7 @@
 ﻿// Main program class
 using System.Linq.Expressions;
 using Microsoft.Data.Sqlite;
+using System;
 
 class Program
 {
@@ -9,6 +10,8 @@ class Program
         // Main program loop
         bool running = true;
         Database db = new Database();
+        // Used for date functionality
+        DateTime currentDate = DateTime.Now;
 
         Console.WriteLine("\nWelcome to the Habit Logger!\n");
 
@@ -34,8 +37,23 @@ class Program
                     {
                         Console.WriteLine("Invalid input. Please enter a number for quantity:");
                     }
-                    Console.WriteLine("Enter date (YYYY-MM-DD, or use an alternative format):");
-                    string date = Console.ReadLine();
+                    Console.WriteLine("1. Enter a date 2. Use todays date");
+                    string date;
+                    switch (Console.ReadLine())
+                    {
+                        case "1":
+                            Console.WriteLine("Enter date (YYYY-MM-DD, or use an alternative format):");
+                            date = Console.ReadLine();
+                            break;
+                        case "2":
+                            Console.WriteLine($"Using today's date: {currentDate.ToString("yyyy-MM-dd")}");
+                            date = currentDate.ToString("yyyy-MM-dd");
+                            break;
+                        default:
+                            Console.WriteLine("Invalid option. Using today's date by default.");
+                            date = currentDate.ToString("yyyy-MM-dd");
+                            break;
+                    };
                     Habit habit = new Habit();
                     habit.setHabit(name, quantity, date);
                     Console.WriteLine("Habit added successfully!");
