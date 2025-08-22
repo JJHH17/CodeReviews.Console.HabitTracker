@@ -70,7 +70,7 @@ class Program
                             date = currentDate.ToString("yyyy-MM-dd");
                             break;
                     };
-                    string category = "Other"; // Default category
+                    string category = "other"; // Default category
 
                     // Prompts user to enter a category for the habit
                     Console.WriteLine("Enter category of habit (Run, Leisure, Work, Errands, Social, Other)");
