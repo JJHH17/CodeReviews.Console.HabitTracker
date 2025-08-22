@@ -117,4 +117,10 @@ class Database
             Console.WriteLine("Error: " + e.Message);
         }
     }
+
+    // Method to edit a given habit by its ID
+
+    // Method to delete a given habit by its ID
+
+    // Method to delete all habits
 }
