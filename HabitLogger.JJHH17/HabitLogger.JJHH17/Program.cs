@@ -9,6 +9,8 @@ class Program
     {
         bool running = true;
         Database db = new Database();
+        // Appending the seeded data to the db 
+        db.seedData();
         // Used for date functionality
         DateTime currentDate = DateTime.Now;
 
@@ -216,8 +218,6 @@ class Habit
                     connection.Open();
                     using var command = new SqliteCommand(tableCreate, connection);
                     command.ExecuteNonQuery();
-
-                    Console.WriteLine("Database and table connection created.");
                 }
             }
             catch (Exception e)
@@ -395,7 +395,7 @@ class Habit
                 connection.Open();
                 using var command = new SqliteCommand(sql, connection);
                 command.Parameters.AddWithValue("$category", category);
- 
+
                 var result = command.ExecuteScalar();
 
                 // Check if result is null (or if table is null with given category)
@@ -403,7 +403,8 @@ class Habit
                 {
                     Console.WriteLine($"No habits found in category '{category}'.");
                     return;
-                } else
+                }
+                else
                 {
                     int totalQuantity = Convert.ToInt32(result);
                     Console.WriteLine($"Total quantity for category '{category}': {totalQuantity}");
@@ -413,6 +414,17 @@ class Habit
             {
                 Console.WriteLine("Error: " + e.Message);
             }
+        }
+
+        public void seedData()
+        {
+            // Creating a loop to add 100 habits to the database
+            for (int i = 0; i < 100; i++)
+            {
+                Habit habit = new Habit();
+                habit.setHabit($"Habit {i + 1}", i + 1, "2023-10-07", "other");
+            }
+            Console.WriteLine("Database seed data added (Auto adds habits)");
         }
     }
 }
