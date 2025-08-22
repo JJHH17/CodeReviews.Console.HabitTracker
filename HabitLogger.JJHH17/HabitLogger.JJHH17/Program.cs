@@ -1,5 +1,4 @@
-﻿// Main program class
-using System.Linq.Expressions;
+﻿using System.Linq.Expressions;
 using Microsoft.Data.Sqlite;
 using System;
 
@@ -9,7 +8,7 @@ class Program
     {
         bool running = true;
         Database db = new Database();
-        // Appending the seeded data to the db 
+        // Appending the seeded data to the db (Remove this line if you don't want seed data)
         db.seedData();
         // Used for date functionality
         DateTime currentDate = DateTime.Now;
@@ -19,13 +18,13 @@ class Program
         // Main program loop
         while (running)
         {
-            Console.WriteLine("Please select an option:");
-            Console.WriteLine("\t1. Add a habit");
-            Console.WriteLine("\t2. View habits");
-            Console.WriteLine("\t3. Delete all habits");
-            Console.WriteLine("\t4. Delete a habit by ID");
-            Console.WriteLine("\t5. Edit a habit (by ID)");
-            Console.WriteLine("\t6. Fetch habit category quantity");
+            Console.WriteLine("\nPlease select an option\n");
+            Console.WriteLine("\t1. Add a habit\n");
+            Console.WriteLine("\t2. View habits\n");
+            Console.WriteLine("\t3. Delete all habits\n");
+            Console.WriteLine("\t4. Delete a habit by ID\n");
+            Console.WriteLine("\t5. Edit a habit (by ID)\n");
+            Console.WriteLine("\t6. Fetch habit category quantity\n");
             Console.WriteLine("\t7. Exit");
 
             string input = Console.ReadLine();
