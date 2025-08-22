@@ -1,4 +1,5 @@
 ﻿// Main program class
+using System.Linq.Expressions;
 using Microsoft.Data.Sqlite;
 
 class Program
@@ -8,7 +9,8 @@ class Program
         Console.WriteLine("Hello from Main");
         Habit newhabit = new Habit();
         newhabit.setHabit("Running", 5, "2024-06-01");
-
+        Database db = new Database();
+        db.viewHabits();
     }
 }
 
@@ -78,6 +80,41 @@ class Database
             command.Parameters.AddWithValue("$quantity", habit.quantity);
             command.Parameters.AddWithValue("$date", habit.date);
             command.ExecuteNonQuery();
+        }
+    }
+
+    // Prints all habits in the database (Includes ID which we can later use to delete or update habits)
+    public void viewHabits()
+    {
+        var sql = "SELECT * FROM habits";
+
+        try
+        {
+            using var connection = new SqliteConnection(@"Data Source=habits.db");
+            connection.Open();
+
+            using var command = new SqliteCommand(sql, connection);
+
+            using var reader = command.ExecuteReader();
+            if (reader.HasRows)
+            {
+                while (reader.Read())
+                {
+                    var id = reader.GetInt32(0);
+                    var name = reader.GetString(1);
+                    var quantity = reader.GetInt32(2);
+                    var date = reader.GetString(3);
+                    Console.WriteLine($"Habit ID: {id}, Name: {name}, Quantity: {quantity}, Date: {date}");
+                }
+            }
+            else
+            {
+                Console.WriteLine("No habits founds");
+            }
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine("Error: " + e.Message);
         }
     }
 }
