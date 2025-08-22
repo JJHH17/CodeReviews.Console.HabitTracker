@@ -6,7 +6,8 @@ class Program
     static void Main(string[] args)
     {
         Console.WriteLine("Hello from Main");
-        Database db = new Database();
+        Habit newhabit = new Habit();
+        newhabit.setHabit("Running", 5, "2024-06-01");
 
     }
 }
@@ -17,12 +18,17 @@ class Habit
     public string name { get; set; }
     public int quantity { get; set; }
     public string date { get; set; }
+    // Connects to database
+    private Database db = new Database();
 
-    public Habit(string name, int quantity, string date)
+    public void setHabit(string name, int quantity, string date)
     {
         this.name = name;
         this.quantity = quantity;
         this.date = date;
+
+        // Adds habit to database
+        db.addHabit(this);
     }
 }
 
@@ -57,6 +63,21 @@ class Database
         catch (Exception e)
         {
             Console.WriteLine("Error: " + e.Message);
+        }
+    }
+
+    // Adds a habit to the database
+    public void addHabit(Habit habit)
+    {
+        using (var connection = new SqliteConnection("Data Source=habits.db"))
+        {
+            connection.Open();
+            var command = connection.CreateCommand();
+            command.CommandText = @"INSERT INTO habits (name, quantity, date) VALUES ($name, $quantity, $date)";
+            command.Parameters.AddWithValue("$name", habit.name);
+            command.Parameters.AddWithValue("$quantity", habit.quantity);
+            command.Parameters.AddWithValue("$date", habit.date);
+            command.ExecuteNonQuery();
         }
     }
 }
