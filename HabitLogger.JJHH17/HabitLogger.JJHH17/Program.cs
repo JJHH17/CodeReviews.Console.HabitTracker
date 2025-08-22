@@ -17,7 +17,8 @@ class Program
             Console.WriteLine("Please select an option:");
             Console.WriteLine("1. Add a habit");
             Console.WriteLine("2. View habits");
-            Console.WriteLine("3. Exit");
+            Console.WriteLine("3. Delete all habits");
+            Console.WriteLine("4. Exit");
 
             string input = Console.ReadLine();
             switch (input)
@@ -31,7 +32,7 @@ class Program
                     {
                         Console.WriteLine("Invalid input. Please enter a number for quantity:");
                     }
-                    Console.WriteLine("Enter date (YYYY-MM-DD):");
+                    Console.WriteLine("Enter date (YYYY-MM-DD, or use an alternative format):");
                     string date = Console.ReadLine();
                     Habit habit = new Habit();
                     habit.setHabit(name, quantity, date);
@@ -43,6 +44,10 @@ class Program
                     break;
 
                 case "3":
+                    db.deleteAllHabits();
+                    break;
+
+                case "4":
                     running = false;
                     Console.WriteLine("Exiting the program. Goodbye!");
                     break;
@@ -91,7 +96,7 @@ class Habit
         {
             try
             {
-                // Creates db in bin/debug/net7.0
+                // Creates the database file in bin/debug/net7.0 directory of project
                 using (var connection = new SqliteConnection("Data Source=habits.db"))
                 {
                     // Creates table if it doesn't exist
@@ -157,11 +162,43 @@ class Habit
                 Console.WriteLine("Error: " + e.Message);
             }
         }
+        // Method to delete a given habit by its ID
 
+        // Method to delete all habits
+        public void deleteAllHabits()
+        {
+            var sql = "DELETE FROM habits";
+            // Provide a warning message before deleting all habits
+            Console.WriteLine("Are you sure you want to delete all habits? This action cannot be undone. (y/n)");
+            switch (Console.ReadLine())
+            {
+                case "y":
+                    try
+                    {
+                        using var connection = new SqliteConnection(@"Data Source=habits.db");
+                        connection.Open();
+                        using var command = new SqliteCommand(sql, connection);
+                        int rowsAffected = command.ExecuteNonQuery();
+                        Console.WriteLine($"{rowsAffected} habits deleted.");
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine("Error: " + e.Message);
+                    }
+                    break;
+
+                case "n":
+                    Console.WriteLine("Deletion request cancelled.");
+                    break;
+
+                default:
+                    // We close this if the input to prevent accidental deletion 
+                    Console.WriteLine("Invalid input. Closing request.");
+                    break;
+            }
+        }
+
+        // Method to edit a given habit by its ID
+        
     }
-    // Method to edit a given habit by its ID
-
-    // Method to delete a given habit by its ID
-
-    // Method to delete all habits
 }
