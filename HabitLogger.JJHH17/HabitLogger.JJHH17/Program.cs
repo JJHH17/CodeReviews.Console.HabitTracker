@@ -19,7 +19,8 @@ class Program
             Console.WriteLine("2. View habits");
             Console.WriteLine("3. Delete all habits");
             Console.WriteLine("4. Delete a habit by ID");
-            Console.WriteLine("5. Exit");
+            Console.WriteLine("5. Edit a habit (by ID)");
+            Console.WriteLine("6. Exit");
 
             string input = Console.ReadLine();
             switch (input)
@@ -60,6 +61,26 @@ class Program
                     break;
 
                 case "5":
+                    Console.WriteLine("Enter the ID of the habit to edit:");
+                    int editId;
+                    while (!int.TryParse(Console.ReadLine(), out editId))
+                    {
+                        Console.WriteLine("Invalid input. Please enter a number for the habit ID:");
+                    }
+                    Console.WriteLine("Enter new habit name:");
+                    string newName = Console.ReadLine();
+                    Console.WriteLine("Enter new quantity of habit (number):");
+                    int newQuantity;
+                    while (!int.TryParse(Console.ReadLine(), out newQuantity))
+                    {
+                        Console.WriteLine("Invalid input. Please enter a number for quantity:");
+                    }
+                    Console.WriteLine("Enter new date (YYYY-MM-DD, or use an alternative format):");
+                    string newDate = Console.ReadLine();
+                    db.editHabitById(editId, newName, newQuantity, newDate);
+                    break;
+
+                case "6":
                     running = false;
                     Console.WriteLine("Exiting the program. Goodbye!");
                     break;
@@ -252,6 +273,33 @@ class Habit
         }
 
         // Method to edit a given habit by its ID
+        public void editHabitById(int id, string newName, int newQuantity, string newDate)
+        {
+            var sql = "UPDATE habits SET name = $name, quantity = $quantity, date = $date WHERE id = $id";
 
+            try
+            {
+                using var connection = new SqliteConnection(@"Data Source=habits.db");
+                connection.Open();
+                using var command = new SqliteCommand(sql, connection);
+                command.Parameters.AddWithValue("$id", id);
+                command.Parameters.AddWithValue("$name", newName);
+                command.Parameters.AddWithValue("$quantity", newQuantity);
+                command.Parameters.AddWithValue("$date", newDate);
+                int rowsAffected = command.ExecuteNonQuery();
+                if (rowsAffected > 0)
+                {
+                    Console.WriteLine($"Habit with ID {id} updated.");
+                }
+                else
+                {
+                    Console.WriteLine($"No habit found with ID {id}.");
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Error: " + e.Message);
+            }
+        }
     }
 }
