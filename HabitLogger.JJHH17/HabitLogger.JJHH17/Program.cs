@@ -181,7 +181,7 @@ class Habit
             var sql = "DELETE FROM habits";
             // Provide a warning message before deleting all habits
             Console.WriteLine("Are you sure you want to delete all habits? This action cannot be undone. (y/n)");
-            switch (Console.ReadLine())
+            switch (Console.ReadLine().ToLower())
             {
                 case "y":
                     try
@@ -215,7 +215,7 @@ class Habit
             var sql = "DELETE FROM habits WHERE id = $id";
             // Provides a pre deletion warning message
             Console.WriteLine($"Are you sure you want to delete habit ID {id}? This action cannot be reverted. (Y/N)");
-            switch (Console.ReadLine())
+            switch (Console.ReadLine().ToLower())
             {
                 case "y":
                     try
