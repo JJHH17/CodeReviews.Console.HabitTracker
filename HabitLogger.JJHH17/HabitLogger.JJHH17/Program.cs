@@ -67,8 +67,46 @@ class Program
                             date = currentDate.ToString("yyyy-MM-dd");
                             break;
                     };
+                    string category = "Other"; // Default category
+
+                    // Prompts user to enter a category for the habit
+                    Console.WriteLine("Enter category of habit (Run, Leisure, Work, Errands, Social, Other)");
+                    string inputCategory = Console.ReadLine();
+                    switch (inputCategory.ToLower())
+                    {
+                        case "run":
+                            category = "Run";
+                            break;
+
+                        case "leisure":
+                            category = "Leisure";
+                            break;
+
+                        case "work":
+                            category = "Work";
+                            break;
+
+                        case "errands":
+                            category = "Errands";
+                            break;
+
+                        case "social":
+                            category = "Social";
+                            break;
+
+                        case "other":
+                            category = "Other";
+                            break;
+
+                        default:
+                            Console.WriteLine("Invalid category. Using 'Other' as default.");
+                            category = "Other";
+                            break;
+                    }
+
+
                     Habit habit = new Habit();
-                    habit.setHabit(name, quantity, date);
+                    habit.setHabit(name, quantity, date, category);
                     Console.WriteLine("Habit added successfully!");
                     break;
 
@@ -129,14 +167,16 @@ class Habit
     public string name { get; set; }
     public int quantity { get; set; }
     public string date { get; set; }
+    public string category { get; set; }
     // Connects to database
     private Database db = new Database();
 
-    public void setHabit(string name, int quantity, string date)
+    public void setHabit(string name, int quantity, string date, string category)
     {
         this.name = name;
         this.quantity = quantity;
         this.date = date;
+        this.category = category;
 
         // Adds habit to database
         db.addHabit(this);
@@ -152,7 +192,8 @@ class Habit
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             name TEXT,
             quantity INTEGER,
-            date TEXT
+            date TEXT,
+            category TEXT
         )";
 
         // Constructor should create a db if one doesn't exist
@@ -184,10 +225,11 @@ class Habit
             {
                 connection.Open();
                 var command = connection.CreateCommand();
-                command.CommandText = @"INSERT INTO habits (name, quantity, date) VALUES ($name, $quantity, $date)";
+                command.CommandText = @"INSERT INTO habits (name, quantity, date, category) VALUES ($name, $quantity, $date, $category)";
                 command.Parameters.AddWithValue("$name", habit.name);
                 command.Parameters.AddWithValue("$quantity", habit.quantity);
                 command.Parameters.AddWithValue("$date", habit.date);
+                command.Parameters.AddWithValue("$category", habit.category);
                 command.ExecuteNonQuery();
             }
         }
@@ -213,7 +255,8 @@ class Habit
                         var name = reader.GetString(1);
                         var quantity = reader.GetInt32(2);
                         var date = reader.GetString(3);
-                        Console.WriteLine($"\nHabit ID: {id}, Name: {name}, Quantity: {quantity}, Date: {date}");
+                        var category = reader.GetString(4);
+                        Console.WriteLine($"\nHabit ID: {id}, Name: {name}, Quantity: {quantity}, Date: {date}, Category: {category}");
                     }
                 }
                 else
