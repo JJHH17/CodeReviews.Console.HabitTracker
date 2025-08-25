@@ -72,7 +72,6 @@ class Program
                     };
                     string category = "other"; // Default category
 
-                    // Prompts user to enter a category for the habit
                     Console.WriteLine("Enter category of habit (Run, Leisure, Work, Errands, Social, Other)");
                     string inputCategory = Console.ReadLine();
                     switch (inputCategory.ToLower())
@@ -107,9 +106,8 @@ class Program
                             break;
                     }
 
-
                     Habit habit = new Habit();
-                    habit.setHabit(name, quantity, date, category);
+                    habit.SetHabit(name, quantity, date, category);
                     Console.WriteLine("Habit added successfully!");
                     break;
 
@@ -123,7 +121,6 @@ class Program
 
                 case "4":
                     Console.WriteLine("\nEnter the ID of the habit to delete:");
-                    // Parse input to an integer (all habit IDs are integers)
                     int id;
                     while (!int.TryParse(Console.ReadLine(), out id))
                     {
@@ -139,6 +136,7 @@ class Program
                     {
                         Console.WriteLine("Invalid input. Please enter a number for the habit ID:");
                     }
+
                     Console.WriteLine("Enter new habit name:");
                     string newName = Console.ReadLine();
                     Console.WriteLine("Enter new quantity of habit (number):");
@@ -192,7 +190,7 @@ class Habit
     public string category { get; set; }
     private Database db = new Database();
 
-    public void setHabit(string name, int quantity, string date, string category)
+    public void SetHabit(string name, int quantity, string date, string category)
     {
         this.name = name;
         this.quantity = quantity;
@@ -420,7 +418,7 @@ class Habit
             for (int i = 0; i < 100; i++)
             {
                 Habit habit = new Habit();
-                habit.setHabit($"Habit {i + 1}", i + 1, "2023-10-07", "other");
+                habit.SetHabit($"Habit {i + 1}", i + 1, "2023-10-07", "other");
             }
             Console.WriteLine("Database seed data added (Auto adds habits)");
         }
