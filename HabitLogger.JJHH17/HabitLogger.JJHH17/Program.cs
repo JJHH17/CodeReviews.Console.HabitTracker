@@ -184,14 +184,12 @@ class Program
     }
 }
 
-// Habit class
 class Habit
 {
     public string name { get; set; }
     public int quantity { get; set; }
     public string date { get; set; }
     public string category { get; set; }
-    // Connects to database
     private Database db = new Database();
 
     public void setHabit(string name, int quantity, string date, string category)
@@ -201,16 +199,13 @@ class Habit
         this.date = date;
         this.category = category;
 
-        // Adds habit to database
         db.addHabit(this);
     }
 }
 
-    // Database class
     class Database
     {
 
-        // Table schema
         private readonly string tableCreate = @"CREATE TABLE IF NOT EXISTS habits (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             name TEXT,
@@ -219,7 +214,6 @@ class Habit
             category TEXT
         )";
 
-        // Constructor should create a db if one doesn't exist
         public Database()
         {
             try
@@ -239,7 +233,6 @@ class Habit
             }
         }
 
-        // Adds a habit to the database
         public void addHabit(Habit habit)
         {
             using (var connection = new SqliteConnection("Data Source=habits.db"))
@@ -255,7 +248,6 @@ class Habit
             }
         }
 
-        // Prints all habits in the database (Includes ID which we can later use to delete or update habits)
         public void viewHabits()
         {
             var sql = "SELECT * FROM habits";
@@ -291,11 +283,10 @@ class Habit
             }
         }
 
-        // Method to delete all habits
         public void deleteAllHabits()
         {
             var sql = "DELETE FROM habits";
-            // Provide a warning message before deleting all habits
+
             Console.WriteLine("\nAre you sure you want to delete all habits? This action cannot be undone. (y/n)");
             switch (Console.ReadLine().ToLower())
             {
@@ -319,17 +310,15 @@ class Habit
                     break;
 
                 default:
-                    // We close this if the input to prevent accidental deletion 
                     Console.WriteLine("Invalid input. Closing request.");
                     break;
             }
         }
 
-        // Method to delete a given habit by its ID
         public void deleteHabitById(int id)
         {
             var sql = "DELETE FROM habits WHERE id = $id";
-            // Provides a pre deletion warning message
+
             Console.WriteLine($"\nAre you sure you want to delete habit ID {id}? This action cannot be reverted. (Y/N)");
             switch (Console.ReadLine().ToLower())
             {
@@ -361,13 +350,11 @@ class Habit
                     return;
 
                 default:
-                    // We close this if the input to prevent accidental deletion 
                     Console.WriteLine("Invalid input. Closing request.");
                     return;
             }
         }
 
-        // Method to edit a given habit by its ID
         public void editHabitById(int id, string newName, int newQuantity, DateTime newDate)
         {
             var sql = "UPDATE habits SET name = $name, quantity = $quantity, date = $date WHERE id = $id";
@@ -397,7 +384,6 @@ class Habit
             }
         }
 
-        // Method to fetch quantity of each category
         public void fetchCategoryQuantities(string category)
         {
             var sql = "SELECT SUM(quantity) FROM habits WHERE category = $category";
@@ -411,7 +397,6 @@ class Habit
 
                 var result = command.ExecuteScalar();
 
-                // Check if result is null (or if table is null with given category)
                 if (result == DBNull.Value || result == null)
                 {
                     Console.WriteLine($"No habits found in category '{category}'.");
@@ -431,7 +416,7 @@ class Habit
 
         public void seedData()
         {
-            // Creating a loop to add 100 habits to the database
+            // Seeding 100 entries to the database
             for (int i = 0; i < 100; i++)
             {
                 Habit habit = new Habit();
