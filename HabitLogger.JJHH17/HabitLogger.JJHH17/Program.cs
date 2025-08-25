@@ -147,8 +147,22 @@ class Program
                     {
                         Console.WriteLine("Invalid input. Please enter a number for quantity:");
                     }
+
                     Console.WriteLine("Enter new date (YYYY-MM-DD, or use an alternative format):");
-                    string newDate = Console.ReadLine();
+                    DateTime newDate;
+                    while (true)
+                    {
+                        try
+                        {
+                            newDate = DateTime.Parse(Console.ReadLine());
+                            break;
+                        }
+                        catch (FormatException)
+                        {
+                            Console.WriteLine("Invalid date format. Please enter the date again (YYYY-MM-DD, or use an alternative format):");
+                        }
+                    }
+
                     db.editHabitById(editId, newName, newQuantity, newDate);
                     break;
 
@@ -354,7 +368,7 @@ class Habit
         }
 
         // Method to edit a given habit by its ID
-        public void editHabitById(int id, string newName, int newQuantity, string newDate)
+        public void editHabitById(int id, string newName, int newQuantity, DateTime newDate)
         {
             var sql = "UPDATE habits SET name = $name, quantity = $quantity, date = $date WHERE id = $id";
 
